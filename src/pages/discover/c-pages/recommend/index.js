@@ -3,6 +3,7 @@ import React, { memo } from 'react';
 
 import YABanner from './c-cpn/banner';
 import YAHotRecommend from './c-cpn/hot-recommend';
+import YANewAlbum from './c-cpn/new-album';
 
 import {
   RecommendWrapper,
@@ -19,6 +20,7 @@ function YARecommend(props) {
       <Content className="wrap-v2">
         <RecommendLeft>
           <YAHotRecommend></YAHotRecommend>
+          <YANewAlbum/>
         </RecommendLeft>
         <RecommendRight>
 
