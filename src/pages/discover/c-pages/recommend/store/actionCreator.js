@@ -3,7 +3,8 @@ import * as actionTypes from './constants';
 import { 
   getTopBanners,
   getHotRecommend,
-  getNewAlbums
+  getNewAlbums,
+  getTopList
 
 } from '@/services/recommend';
 
@@ -22,6 +23,21 @@ const changeNewAlbums = (res) =>({
   newAlbums: res.albums
 })
 
+const changeUpList = (res) =>({
+  type: actionTypes.CHANGE_UP_LIST,
+  upList: res.playlist
+})
+
+const changeNewList = (res) =>({
+  type: actionTypes.CHANGE_NEW_LIST,
+  newList: res.playlist
+})
+
+const changeOriginList = (res) =>({
+  type: actionTypes.CHANGE_ORIGIN_LIST,
+  originList: res.playlist
+})
+
 export const getTopBannersAction = () =>{
   return dispatch => {
     getTopBanners().then(res =>{
@@ -29,7 +45,7 @@ export const getTopBannersAction = () =>{
     })
   }
 }
-
+// 热门推荐
 export const getHotRecommendAction = (limit) =>{
   return dispatch => {
     getHotRecommend(limit).then(res => {
@@ -38,6 +54,7 @@ export const getHotRecommendAction = (limit) =>{
   }
 }
 
+// 新碟上架
 export const getNewAlbumAction = (limit) =>{
   return dispatch => {
     getNewAlbums(limit).then(res => {
@@ -45,4 +62,31 @@ export const getNewAlbumAction = (limit) =>{
     })
   }
 }
+
+// 榜单
+export const getUpListAction = (idx) =>{
+  return dispatch =>{
+    getTopList(idx).then(res => {
+      dispatch(changeUpList(res));
+    })
+  }
+}
+
+export const getNewListAction = (idx) =>{
+  return dispatch =>{
+    getTopList(idx).then(res => {
+     dispatch(changeNewList(res));
+    })
+  }
+}
+
+export const getOriginListAction = (idx) =>{
+  return dispatch =>{
+    getTopList(idx).then(res => {
+      dispatch(changeOriginList(res));
+    })
+  }
+}
+
+
 

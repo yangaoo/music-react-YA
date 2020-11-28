@@ -22,3 +22,12 @@ export function getNewAlbums(limit) {
     }
   })
 }
+
+export function getTopList(idx) {
+  return request({
+    url:"/top/list",
+    params: {
+      idx
+    }
+  })
+}
