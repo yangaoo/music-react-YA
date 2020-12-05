@@ -6,9 +6,11 @@ import store from '@/store';
 
 import routes from '@/router';
 
-import YAAppHeader from '@/components/app-header';
-import YAAppFooter from '@/components/app-footer';
 import { HashRouter } from 'react-router-dom';
+import YAAppHeader from '@/components/app-header';
+// import YAAppFooter from '@/components/app-footer';
+import YAPlayBar from '@/pages/play/play-bar';
+
 
 
 export default memo(function App() {
@@ -17,7 +19,8 @@ export default memo(function App() {
       <HashRouter>
         <YAAppHeader />
         {renderRoutes(routes)}
-        <YAAppFooter />
+        {/* <YAAppFooter /> */}
+        <YAPlayBar/>
       </HashRouter>
     </Provider>
 
