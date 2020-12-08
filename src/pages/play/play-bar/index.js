@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { getSizeImage, formatDate, getPlaySong } from '@/utils/format-utils';
@@ -22,11 +22,21 @@ export default memo(function YAPlayBar() {
   const dispatch = useDispatch();
   // other hooks
   const [currentTime, setCurrentTime] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [isChange, setIsChange] = useState(false);
+  // 控制歌曲播放
+  const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef();
+
+  
 
   useEffect(() => {
     dispatch(getSongDetailAction(167876))
   }, [dispatch])
+
+  useEffect(() => {
+    audioRef.current.src = getPlaySong(currentSong.id);
+  },[currentSong])
 
   // 对数据进行处理展示
   const picUrl = (currentSong.al && currentSong.al.picUrl) || "";
@@ -40,25 +50,48 @@ export default memo(function YAPlayBar() {
   // 播放进度
   const nowTime = formatDate(currentTime, "mm:ss");
   // Slider的播放条进度
-  const progress = currentTime/songTime * 100
-
+  // const progress = currentTime / songTime * 100
+// 处理函数
   //歌曲播放处理函数
   const playMusic = () => {
     // 给audio元素设置相关属性
-    audioRef.current.src = getPlaySong(currentSong.id);
-    audioRef.current.play();
+    isPlaying ? audioRef.current.pause() : audioRef.current.play();
+    setIsPlaying(!isPlaying);
+    
   }
   const updateTime = (e) => {
-    setCurrentTime(e.target.currentTime * 1000)
+    
+    if(!isChange) {
+      setCurrentTime(e.target.currentTime * 1000);
+      setProgress(currentTime/songTime *100)
+    }
+   
   }
+
+  // 滑动slider时的回调函数, 改变currentTime
+  const sliderChange = useCallback((value) => {
+    setIsChange(true);
+    // 滑块滑动时,歌曲播放时间改变
+    const currentTime = value / 100 * songTime ;
+    setCurrentTime(currentTime);
+    setProgress(value);
+  },[songTime]);
+  const sliderAfterChange = useCallback((value) => {
+    //currentTime:  onmouseup弹起时歌曲从当前播放进度
+    const currentTime = value / 100 * songTime /1000;
+    audioRef.current.currentTime = currentTime;
+    // 解决slider会闪回滑动前的问题,改变歌曲当前时间后,直接设置时间
+    setCurrentTime(currentTime * 1000);
+    setIsChange(false);
+  },[songTime])
 
   return (
     <PlayBarWrapper className="sprite_player">
       <div className="content wrap-v2">
-        <Control isPlaying={true}>
+        <Control isPlaying={isPlaying}>
           <button className="sprite_player prev"></button>
           <button className="sprite_player play"
-            onClick={e => playMusic()}></button>
+                  onClick={e => playMusic()}></button>
           <button className="sprite_player next"></button>
         </Control>
         <PlayInfo>
@@ -73,7 +106,10 @@ export default memo(function YAPlayBar() {
               <a href="/#" className="singer-name">{singerName}</a>
             </div>
             <div className="progress">
-              <Slider defaultValue={0} value={progress}/>
+              <Slider defaultValue={0} 
+                      value={progress}
+                      onChange={sliderChange}
+                      onAfterChange={sliderAfterChange}/>
               <div className="time">
                 <span className="now-time">{nowTime}</span>
                 <span className="divider">/</span>
